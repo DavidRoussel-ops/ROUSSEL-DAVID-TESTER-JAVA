@@ -76,7 +76,9 @@ public class TicketDAO {
     }
 
     public int getNbTicket(String vehicleRegNumber) {
-        List<Ticket> tickets = (List<Ticket>) getTicket(vehicleRegNumber);
+        List<Ticket> tickets = new ArrayList<>();
+        Ticket nbTicket = new Ticket();
+        tickets.add(nbTicket);
         int count = 0;
         for (Ticket ticket : tickets) {
             if (ticket.getVehicleRegNumber().equals(vehicleRegNumber)) {
