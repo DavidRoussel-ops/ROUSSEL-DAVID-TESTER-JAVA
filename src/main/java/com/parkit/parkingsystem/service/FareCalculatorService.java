@@ -20,7 +20,6 @@ public class FareCalculatorService {
         Date inHour = ticket.getInTime();
         Date outHour = ticket.getOutTime();
 
-        //TODO: Some tests are failing here. Need to check if this logic is correct
         double duration = (double) (outHour.getTime() - inHour.getTime()) /1000/60/60;
 
         if(duration < 0.5) {
