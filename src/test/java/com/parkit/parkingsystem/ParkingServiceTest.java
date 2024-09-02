@@ -5,8 +5,12 @@ import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+import junit.framework.Assert;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +18,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.text.MessageFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 
 import static org.mockito.Mockito.*;
@@ -21,6 +28,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ParkingServiceTest {
 
+    @Mock
     private static ParkingService parkingService;
 
     @Mock
@@ -29,18 +37,39 @@ public class ParkingServiceTest {
     private static ParkingSpotDAO parkingSpotDAO;
     @Mock
     private static TicketDAO ticketDAO;
+    @Mock
+    private static FareCalculatorService fareCalculatorService;
+
+    private static Instant startTime;
+
+    @BeforeAll
+    public static void initStartingTime() {
+        System.out.println("Appel avant le lançement des tests");
+        startTime = Instant.now();
+    }
+
+    @AfterAll
+    public static void endTestDuration() {
+        System.out.println("Fin des tests");
+        Instant endTime = Instant.now();
+        long duration = Duration.between(startTime, endTime).toMillis();
+        System.out.println(MessageFormat.format("Durée des tests : {0} ms", duration));
+    }
 
     @BeforeEach
-    private void setUpPerTest() {
+    public void setUpPerTest() {
         try {
             when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
             Ticket ticket = new Ticket();
-            ticket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000)));
+            ticket.setInTime(new Date(System.currentTimeMillis() - (120*60*1000)));
+            ticket.setOutTime(new Date());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
+            fareCalculatorService.calculateFare(ticket);
             when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
+            when(ticketDAO.getNbTicket(anyString())).thenReturn(ticket.getId());
             when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
 
             when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
