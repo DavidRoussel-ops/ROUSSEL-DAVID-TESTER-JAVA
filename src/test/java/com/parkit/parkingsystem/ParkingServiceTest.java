@@ -63,13 +63,14 @@ public class ParkingServiceTest {
 
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
             Ticket ticket = new Ticket();
-            ticket.setInTime(new Date(System.currentTimeMillis() - (120*60*1000)));
+            ticket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000)));
             ticket.setOutTime(new Date());
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
-            fareCalculatorService.calculateFare(ticket);
-            when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
-            when(ticketDAO.getNbTicket(anyString())).thenReturn(ticket.getId());
+            ticket.setParkingSpot(parkingSpot);
+
+            when(ticketDAO.getTicket(ticket.getVehicleRegNumber())).thenReturn(ticket);
+            when(ticketDAO.getNbTicket(ticket.getVehicleRegNumber())).thenReturn(ticket.getId());
             when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
 
             when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
