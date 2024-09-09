@@ -55,16 +55,12 @@ public class ParkingServiceTest {
     public void setUpPerTest() {
         try {
             inputReaderUtil.readSelection();
-
-            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
             ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
             Ticket ticket = new Ticket();
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
             ParkingType parkingType = ParkingType.CAR;
             parkingSpot.setParkingType(parkingType);
-            when(ticketDAO.getNbTicket(ticket.getVehicleRegNumber())).thenReturn(ticket.getId());
-            when(parkingSpotDAO.updateParking(parkingSpot)).thenReturn(true);
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,7 +69,9 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void processExitingVehicleTest(){
+    public void processExitingVehicleTest() throws Exception {
+        System.out.println("processExitingVehicleTest TEST ");
+        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         Ticket ticket = new Ticket();
         ticket.setParkingSpot(parkingSpot);
@@ -82,18 +80,59 @@ public class ParkingServiceTest {
         ticket.setOutTime(new Date());
         when(ticketDAO.getTicket(ticket.getVehicleRegNumber())).thenReturn(ticket);
         when(ticketDAO.updateTicket(ticket)).thenReturn(true);
+        when(ticketDAO.getNbTicket(ticket.getVehicleRegNumber())).thenReturn(ticket.getId());
+        when(parkingSpotDAO.updateParking(parkingSpot)).thenReturn(true);
         parkingSpotDAO.updateParking(parkingSpot);
         parkingService.processExitingVehicle();
+        verify(ticketDAO).getNbTicket("ABCDEF");
     }
 
     @Test
     public void processIncomingVehicleTest() {
+        System.out.println("processIncomingVehiculeTest TEST");
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
         parkingService.processIncomingVehicle();
     }
 
+    @Test
+    public void processExitingVehicleTestUnableUpdate() {
+        System.out.println("processIncomingVehiculeTest TEST");
+        try {
+            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        Ticket ticket = new Ticket();
+        ticket.setParkingSpot(parkingSpot);
+        ticket.setVehicleRegNumber("ABCDEF");
+        ticket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000)));
+        ticket.setOutTime(new Date());
+        when(ticketDAO.getTicket(ticket.getVehicleRegNumber())).thenReturn(ticket);
+        when(ticketDAO.updateTicket(ticket)).thenReturn(false);
+        when(ticketDAO.getNbTicket(ticket.getVehicleRegNumber())).thenReturn(ticket.getId());
+        when(parkingSpotDAO.updateParking(parkingSpot)).thenReturn(true);
+        parkingSpotDAO.updateParking(parkingSpot);
+        parkingService.processExitingVehicle();
+        Assertions.assertFalse(ticketDAO.updateTicket(ticket));
+    }
 
+    @Test
+    public void getNextParkingNumberIfAvailableTest() {
+        System.out.println("getNextParkingNumberIfAvailableTest TEST");
+        when(inputReaderUtil.readSelection()).thenReturn(1);
+        when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
+        parkingService.getNextParkingNumberIfAvailable();
+    }
+
+    @Test
+    public void getNextParkingNumberIfAvailableParkingNumberNotFoundTest() {
+        System.out.println("getNextParkingNumberIfAvailableParkingNumberNotFoundTest TEST");
+        when(inputReaderUtil.readSelection()).thenReturn(0);
+        parkingService.getNextParkingNumberIfAvailable();
+        Assertions.assertNull(parkingService.getNextParkingNumberIfAvailable());
+    }
 
 
 
