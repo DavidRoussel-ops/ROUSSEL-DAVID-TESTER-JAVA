@@ -10,6 +10,7 @@ import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -131,7 +132,15 @@ public class ParkingServiceTest {
         System.out.println("getNextParkingNumberIfAvailableParkingNumberNotFoundTest TEST");
         when(inputReaderUtil.readSelection()).thenReturn(0);
         parkingService.getNextParkingNumberIfAvailable();
-        Assertions.assertNull(parkingService.getNextParkingNumberIfAvailable());
+        Assertions.assertThrows(Exception.class, (Executable) parkingService.getNextParkingNumberIfAvailable(), "Error fetching parking number from DB. Parking slots might be full");
+    }
+
+    @Test
+    public void getNextParkingNumberIfAvailableParkingNumberWrongArgumentTest() {
+        System.out.println("getNextParkingNumberIfAvailableParkingNumberWrongArgumentTest TEST");
+        when(inputReaderUtil.readSelection()).thenReturn(3);
+        parkingService.getNextParkingNumberIfAvailable();
+        Assertions.assertThrows(Exception.class, (Executable) parkingService.getNextParkingNumberIfAvailable(), "Error fetching parking number from DB. Parking slots might be full");
     }
 
 
