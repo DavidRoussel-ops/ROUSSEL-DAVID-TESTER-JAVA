@@ -76,7 +76,7 @@ public class TicketDAO {
         tickets.add(nbTicket);
         int count = 0;
         for (Ticket ticket : tickets) {
-            if (ticket.getVehicleRegNumber().equals(vehicleRegNumber)) {
+            if (ticket != null && ticket.getVehicleRegNumber().equals(vehicleRegNumber)) {
                 count ++;
             }
         }
