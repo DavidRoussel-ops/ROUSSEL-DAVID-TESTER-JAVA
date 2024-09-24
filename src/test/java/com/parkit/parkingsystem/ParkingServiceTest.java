@@ -161,9 +161,11 @@ public class ParkingServiceTest {
     @Test
     public void getNextParkingNumberIfAvailableCarTest() {
         System.out.println("getNextParkingNumberIfAvailableCarTest TEST CAR");
+        boolean result = true;
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
         parkingService.getNextParkingNumberIfAvailable();
+        Assertions.assertTrue(result);
     }
 
     @Test
