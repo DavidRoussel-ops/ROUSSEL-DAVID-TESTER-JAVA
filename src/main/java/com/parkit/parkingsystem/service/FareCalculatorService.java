@@ -22,8 +22,6 @@ public class FareCalculatorService {
         Date outHour = ticket.getOutTime();
 
         double duration = (double) (outHour.getTime() - inHour.getTime()) /1000/60/60;
-        DecimalFormat df = new DecimalFormat("0.00");
-        String str = df.format(duration);
 
         if(duration < 0.5) {
             switch (ticket.getParkingSpot().getParkingType()){
