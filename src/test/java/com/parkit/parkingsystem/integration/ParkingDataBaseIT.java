@@ -43,7 +43,6 @@ public class ParkingDataBaseIT {
 
     @AfterAll
     public static void tearDown(){
-        //dataBasePrepareService.clearDataBaseEntries();
     }
 
 
@@ -58,7 +57,7 @@ public class ParkingDataBaseIT {
     }
 
     @Test
-    public void testParkingLotExit(){
+    public void testParkingLotExit() {
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processExitingVehicle();
