@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class TicketDAO {
 
@@ -30,7 +31,7 @@ public class TicketDAO {
             ps.setString(2, ticket.getVehicleRegNumber());
             ps.setDouble(3, ticket.getPrice());
             ps.setTimestamp(4, new Timestamp(ticket.getInTime().getTime()));
-            ps.setTimestamp(5, (ticket.getOutTime() == null)?null: (new Timestamp(ticket.getOutTime().getTime())) );
+            ps.setTimestamp(5, (ticket.getOutTime() == null) ? null: (new Timestamp(ticket.getOutTime().getTime())) );
             ps.execute();
         }catch (Exception ex){
             logger.error("Error fetching next available slot",ex);
@@ -103,4 +104,42 @@ public class TicketDAO {
         }
         return false;
     }
+
+    public double getPriceBDD(String vehicleRegNumber) {
+        Connection con = null;
+        double prixBDD = 0;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement preparedStatement = con.prepareStatement("SELECT * FROM TICKET WHERE VEHICLE_REG_NUMBER = '" + vehicleRegNumber + "'");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                prixBDD = resultSet.getDouble("PRICE");
+            }
+        } catch (Exception e) {
+            System.out.println("Error getNbTicket : " + e);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return prixBDD;
+    }
+
+    public Date getTimeBDD(String vehicleRegNumber) {
+        Connection con = null;
+        Date timeBDD = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement preparedStatement = con.prepareStatement("SELECT * FROM TICKET WHERE VEHICLE_REG_NUMBER = '" + vehicleRegNumber + "'");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                timeBDD = resultSet.getTimestamp("OUT_TIME");
+            }
+        } catch (Exception e) {
+            System.out.println("Error getNbTicket : " + e);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return timeBDD;
+    }
+
+
 }
