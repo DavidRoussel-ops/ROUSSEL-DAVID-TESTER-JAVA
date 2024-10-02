@@ -4,9 +4,6 @@ package com.parkit.parkingsystem.service;
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
 
-import java.text.DecimalFormat;
-import java.util.Date;
-
 public class FareCalculatorService {
 
     public void calculateFare(Ticket ticket) {
@@ -18,10 +15,10 @@ public class FareCalculatorService {
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
         }
 
-        Date inHour = ticket.getInTime();
-        Date outHour = ticket.getOutTime();
+        double inHour = ticket.getInTime().getTime();
+        double outHour = ticket.getOutTime().getTime();
 
-        double duration = (double) (outHour.getTime() - inHour.getTime()) /1000/60/60;
+        double duration = Math.round(((outHour - inHour)/1000/60/60)*100.0)/100.0;
 
         if(duration < 0.5) {
             switch (ticket.getParkingSpot().getParkingType()){
