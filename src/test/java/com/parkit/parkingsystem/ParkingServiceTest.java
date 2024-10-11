@@ -167,11 +167,10 @@ public class ParkingServiceTest {
     @Test
     public void getNextParkingNumberIfAvailableCarTest() {
         System.out.println("getNextParkingNumberIfAvailableCarTest TEST CAR");
-        boolean result = true;
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR)).thenReturn(1);
         parkingService.getNextParkingNumberIfAvailable();
-        Assertions.assertTrue(result);
+        Assertions.assertTrue(parkingService.getNextParkingNumberIfAvailable().isAvailable());
     }
 
     @Test
@@ -180,6 +179,7 @@ public class ParkingServiceTest {
         when(inputReaderUtil.readSelection()).thenReturn(2);
         when(parkingSpotDAO.getNextAvailableSlot(ParkingType.BIKE)).thenReturn(1);
         parkingService.getNextParkingNumberIfAvailable();
+        Assertions.assertTrue(parkingService.getNextParkingNumberIfAvailable().isAvailable());
     }
 
     @Test
